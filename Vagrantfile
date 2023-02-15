@@ -12,10 +12,6 @@ Vagrant.configure("2") do |config|
 
   config.vm.synced_folder ".", "/vagrant", disabled: true
 
-  config.vm.provision :ansible do |ansible|
-    ansible.playbook = "playbooks/provision.yml"
-  end
-
   config.vm.provider :libvirt do |v|
     v.memory = 256
     v.cpus = 1
@@ -30,18 +26,27 @@ Vagrant.configure("2") do |config|
     end
   end
 
-  # App Server 1
-  config.vm.define :app1 do |app|
-    app.vm.hostname = "orc-app1.test"
+  # Server Machines
+  N = 2
+  
+  (1..N).each do |machine_id|
+    config.vm.define "machine#{machine_id}" do |machine|
+      machine.vm.hostname = "machine#{machine_id}"
+      machine.vm.network "private_network", ip: "192.168.77.#{20+machine_id}"
+  
+      # Only execute once the Ansible provisioner,
+      # when all the machines are up and ready.
+      if machine_id == N
+        machine.vm.provision :ansible do |ansible|
+          # Disable default limit to connect to all the machines
+          ansible.limit = "all"
+          ansible.playbook = "playbooks/provision.yml"
+          ansible.groups = {
+            "servers" => ["machine[1:#{N}]"]
+          }
+        end
+      end
+    end
   end
 
-  # App Server 2
-  config.vm.define "app2" do |app|
-    app.vm.hostname = "orc-app2.test"
-  end
-
-  # DB Server
-  config.vm.define "db" do |db|
-    db.vm.hostname = "orc-db.test"
-  end
 end
