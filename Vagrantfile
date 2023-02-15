@@ -27,22 +27,22 @@ Vagrant.configure("2") do |config|
   end
 
   # Server Machines
-  N = 2
+  SERVERS = 2
   
-  (1..N).each do |machine_id|
+  (1..SERVERS).each do |machine_id|
     config.vm.define "machine#{machine_id}" do |machine|
       machine.vm.hostname = "machine#{machine_id}"
       machine.vm.network "private_network", ip: "192.168.77.#{20+machine_id}"
   
       # Only execute once the Ansible provisioner,
       # when all the machines are up and ready.
-      if machine_id == N
+      if machine_id == SERVERS
         machine.vm.provision :ansible do |ansible|
           # Disable default limit to connect to all the machines
           ansible.limit = "all"
           ansible.playbook = "playbooks/provision.yml"
           ansible.groups = {
-            "servers" => ["machine[1:#{N}]"]
+            "servers" => ["machine[1:#{SERVERS}]"]
           }
         end
       end
