@@ -18,6 +18,16 @@ Vagrant.configure("2") do |config|
 
   config.vm.provider :libvirt do |v|
     v.memory = 256
+    v.cpus = 1
+  end
+
+  # Control
+  config.vm.define :control do |control|
+    control.vm.hostname = "control.test"
+    control.vm.provider :libvirt do |v|
+      v.memory = 1024
+      v.cpus = 2
+    end
   end
 
   # App Server 1
