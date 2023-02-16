@@ -27,7 +27,7 @@ Vagrant.configure("2") do |config|
   end
 
   # Server Machines
-  SERVERS = 2
+  SERVERS = 3
   
   (1..SERVERS).each do |machine_id|
     config.vm.define "machine#{machine_id}" do |machine|
@@ -42,7 +42,8 @@ Vagrant.configure("2") do |config|
           ansible.limit = "all"
           ansible.playbook = "playbooks/provision.yml"
           ansible.groups = {
-            "servers" => ["machine[1:#{SERVERS}]"]
+            "db" => ["machine1"],
+            "app" => ["machine[2:#{SERVERS}]"]
           }
         end
       end
