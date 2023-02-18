@@ -1,0 +1,49 @@
+---
+- name: Example playbook.
+  hosts: machine1
+  become: true
+
+  environment:
+    http_proxy: http://example-proxy:80/
+
+  handlers:
+    - name: Restart nginx
+      ansible.builtin.service:
+        name: nginx
+        state: restarted
+
+  tasks:
+    - name: Add env variable to shell
+      become: false
+      ansible.builtin.lineinfile:
+        dest: "~/.bash_profile"
+        regexp: '^ENV_VAR='
+        line: 'ENV_VAR=sisiorka'
+
+    - name: Download a file.
+      ansible.builtin.get_url:
+        url: http://ipv4.download.thinkbroadband.com/20MB.zip
+        dest: /tmp
+        mode: 0644
+
+    - name: Ensure ngnix is installed.
+      ansible.builtin.dnf:
+        name: nginx
+        state: present
+
+    - name: Copy index.html
+      ansible.builtin.copy:
+        src: files/index.html
+        dest: /usr/share/nginx/html/index.html
+        owner: root
+        mode: 0644
+      notify: Restart nginx
+
+    - name: Ensure handlers are flushed immediately.
+      ansible.builtin.meta: flush_handlers
+
+    - name: Ensure ngnix is started
+      ansible.builtin.service:
+        name: nginx
+        state: started
+        enabled: true
