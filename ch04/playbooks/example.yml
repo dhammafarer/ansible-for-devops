@@ -1,0 +1,7 @@
+---
+- name: Example playbook.
+  hosts: machine1
+  become: true
+
+  vars_files:
+    - vars.yml

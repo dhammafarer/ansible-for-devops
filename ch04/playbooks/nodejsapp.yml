@@ -1,0 +1,16 @@
+---
+- name: Deploy a node.js app.
+  hosts: app
+  become: true
+
+  vars:
+    node_apps_location: /usr/local/opt/node
+
+  tasks:
+    - name: Add EPEL repo.
+      ansible.builtin.shell:
+        cmd: subscription-manager repos --enable codeready-builder-for-rhel-9-$(arch)-rpms
+
+    - name: Install EPEL.
+      ansible.builtin.dnf:
+        name: https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
