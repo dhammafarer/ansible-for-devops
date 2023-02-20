@@ -1,19 +1,21 @@
 ---
 - name: Testing ansible.
   hosts: all
-
-  handlers:
-    - name: Print
-      ansible.builtin.debug:
-        msg: "Command resulted in a change!"
+  become: true
 
   tasks:
-    - name: Register output of 'uptime'
-      ansible.builtin.command: uptime
-      register: system_uptime
-      changed_when: false
-      notify: Print
+    - name: Enable codeready-builder
+      community.general.ini_file:
+        path: /etc/yum.repos.d/redhat.repo
+        section: codeready-builder-for-rhel-9-x86_64-rpms
+        mode: '0644'
+        option: enabled
+        value: 1
 
-    - name: Print output of uptime
-      ansible.builtin.debug:
-        var: system_uptime.stdout
+    - name: Install EPEL repository
+      ansible.builtin.yum_repository:
+        name: epel
+        description: EPEL release
+        baseurl: https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+        gpgcheck: true
+        gpgkey: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-9
