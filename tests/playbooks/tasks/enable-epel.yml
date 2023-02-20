@@ -1,0 +1,16 @@
+---
+- name: Enable codeready-builder
+  community.general.ini_file:
+    path: /etc/yum.repos.d/redhat.repo
+    section: codeready-builder-for-rhel-9-x86_64-rpms
+    mode: '0644'
+    option: enabled
+    value: 1
+
+- name: Install EPEL repository
+  ansible.builtin.yum_repository:
+    name: epel
+    description: EPEL release
+    metalink: https://mirrors.fedoraproject.org/metalink?repo=epel-$releasever&arch=$basearch&infra=$infra&content=$contentdir
+    gpgcheck: true
+    gpgkey: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-9
