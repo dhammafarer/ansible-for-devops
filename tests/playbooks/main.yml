@@ -16,6 +16,14 @@
       ansible.builtin.yum_repository:
         name: epel
         description: EPEL release
-        baseurl: https://dl.fedoraproject.org/pub/epel/epel-release-latest-9.noarch.rpm
+        metalink: https://mirrors.fedoraproject.org/metalink?repo=epel-$releasever&arch=$basearch&infra=$infra&content=$contentdir
         gpgcheck: true
         gpgkey: https://dl.fedoraproject.org/pub/epel/RPM-GPG-KEY-EPEL-9
+
+    - name: Install essential packages
+      ansible.builtin.dnf:
+        name:
+          - git
+          - vim-enhanced
+          - neofetch
+        state: present
