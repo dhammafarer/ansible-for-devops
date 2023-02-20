@@ -1,0 +1,19 @@
+---
+- name: Testing ansible.
+  hosts: all
+
+  handlers:
+    - name: Print
+      ansible.builtin.debug:
+        msg: "Command resulted in a change!"
+
+  tasks:
+    - name: Register output of 'uptime'
+      ansible.builtin.command: uptime
+      register: system_uptime
+      changed_when: false
+      notify: Print
+
+    - name: Print output of uptime
+      ansible.builtin.debug:
+        var: system_uptime.stdout
